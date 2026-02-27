@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { CartDrawer } from '@/components/layout/CartDrawer';
 import { Footer } from '@/components/layout/Footer';
@@ -9,10 +10,12 @@ import { FarmSection } from '@/components/sections/FarmSection';
 import { GallerySection } from '@/components/sections/GallerySection';
 import { ShopSection } from '@/components/sections/ShopSection';
 import { BlogSection } from '@/components/sections/BlogSection';
+import FarmerPortal from '@/components/sections/FarmerPortal';
 import { useCart } from '@/hooks/useCart';
 import type { Product } from '@/types';
 
 function App() {
+  const [view, setView] = useState<'landing' | 'portal'>('landing');
   const {
     items,
     isOpen,
@@ -32,7 +35,12 @@ function App() {
   return (
     <div className="min-h-screen bg-farm-cream">
       {/* Navigation */}
-      <Navbar cartCount={totalItems} onCartClick={() => setIsOpen(true)} />
+      <Navbar
+        cartCount={totalItems}
+        onCartClick={() => setIsOpen(true)}
+        onPortalClick={() => setView(view === 'landing' ? 'portal' : 'landing')}
+        isPortalActive={view === 'portal'}
+      />
 
       {/* Cart Drawer */}
       <CartDrawer
@@ -46,18 +54,24 @@ function App() {
 
       {/* Main Content */}
       <main>
-        <HeroSection />
-        <AboutSection />
-        <WarehouseSection />
-        <SustainableSection />
-        <FarmSection />
-        <GallerySection />
-        <ShopSection onAddToCart={handleAddToCart} />
-        <BlogSection />
+        {view === 'landing' ? (
+          <>
+            <HeroSection />
+            <AboutSection />
+            <WarehouseSection />
+            <SustainableSection />
+            <FarmSection />
+            <GallerySection />
+            <ShopSection onAddToCart={handleAddToCart} />
+            <BlogSection />
+          </>
+        ) : (
+          <FarmerPortal onBack={() => setView('landing')} />
+        )}
       </main>
 
       {/* Footer */}
-      <Footer />
+      {view === 'landing' && <Footer />}
     </div>
   );
 }

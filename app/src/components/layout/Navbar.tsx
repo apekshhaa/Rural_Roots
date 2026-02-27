@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, X, Search, ShoppingCart, ChevronDown, ExternalLink } from 'lucide-react';
+import { LogOut, X, Search, ShoppingCart, ChevronDown, ExternalLink, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -14,6 +14,8 @@ import { useScrollPosition } from '@/hooks/useScrollPosition';
 interface NavbarProps {
   cartCount: number;
   onCartClick: () => void;
+  onPortalClick: () => void;
+  isPortalActive: boolean;
 }
 
 const navLinks = [
@@ -35,7 +37,7 @@ const exploreItems = [
   { name: 'Our Story', href: '#about' },
 ];
 
-export function Navbar({ cartCount, onCartClick }: NavbarProps) {
+export function Navbar({ cartCount, onCartClick, onPortalClick, isPortalActive }: NavbarProps) {
   const { isScrolled } = useScrollPosition();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -46,109 +48,140 @@ export function Navbar({ cartCount, onCartClick }: NavbarProps) {
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-            ? 'bg-farm-dark/95 backdrop-blur-md shadow-lg'
-            : 'bg-farm-dark/80'
+          ? 'bg-farm-dark/95 backdrop-blur-md shadow-lg'
+          : 'bg-farm-dark/80'
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-[72px]">
             {/* Left: Menu Button + Logo */}
             <div className="flex items-center gap-4">
-              <a
-                href="#"
-                className="text-2xl font-serif font-semibold text-white tracking-wide"
+              <button
+                onClick={() => isPortalActive ? onPortalClick() : undefined}
+                className="text-2xl font-serif font-semibold text-white tracking-wide hover:text-farm-mint transition-colors"
               >
                 Rural Roots
-              </a>
+              </button>
             </div>
 
             {/* Center: Navigation Links */}
             <div className="hidden lg:flex items-center gap-6">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1"
+              {!isPortalActive ? (
+                <>
+                  {navLinks.map((link) => (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1"
+                    >
+                      {link.name}
+                      {link.external && <ExternalLink className="h-3 w-3" />}
+                    </a>
+                  ))}
+
+                  {/* Harvest Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
+                      Harvest
+                      <ChevronDown className="h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-farm-dark border-farm-primary/30">
+                      {harvestItems.map((item) => (
+                        <DropdownMenuItem
+                          key={item.name}
+                          className="text-white/90 hover:text-farm-mint hover:bg-farm-primary/30 cursor-pointer"
+                        >
+                          <a href={item.href}>{item.name}</a>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* Explore Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
+                      Explore
+                      <ChevronDown className="h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-farm-dark border-farm-primary/30">
+                      {exploreItems.map((item) => (
+                        <DropdownMenuItem
+                          key={item.name}
+                          className="text-white/90 hover:text-farm-mint hover:bg-farm-primary/30 cursor-pointer"
+                        >
+                          <a href={item.href}>{item.name}</a>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              ) : (
+                <button
+                  onClick={onPortalClick}
+                  className="text-farm-mint hover:text-white transition-colors duration-200 text-lg font-medium flex items-center gap-2"
                 >
-                  {link.name}
-                  {link.external && <ExternalLink className="h-3 w-3" />}
-                </a>
-              ))}
-
-              {/* Harvest Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
-                  Harvest
-                  <ChevronDown className="h-4 w-4" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-farm-dark border-farm-primary/30">
-                  {harvestItems.map((item) => (
-                    <DropdownMenuItem
-                      key={item.name}
-                      className="text-white/90 hover:text-farm-mint hover:bg-farm-primary/30 cursor-pointer"
-                    >
-                      <a href={item.href}>{item.name}</a>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Explore Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
-                  Explore
-                  <ChevronDown className="h-4 w-4" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-farm-dark border-farm-primary/30">
-                  {exploreItems.map((item) => (
-                    <DropdownMenuItem
-                      key={item.name}
-                      className="text-white/90 hover:text-farm-mint hover:bg-farm-primary/30 cursor-pointer"
-                    >
-                      <a href={item.href}>{item.name}</a>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  ← Back to Main Site
+                </button>
+              )}
             </div>
 
             {/* Right: Search + Cart */}
             <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center">
-                <Input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-40 lg:w-52 bg-farm-primary/50 border-farm-primary/50 text-white placeholder:text-white/50 rounded-r-none focus-visible:ring-farm-mint"
-                />
-                <Button
-                  size="icon"
-                  className="bg-farm-primary/70 hover:bg-farm-primary rounded-l-none border border-l-0 border-farm-primary/50"
-                >
-                  <Search className="h-4 w-4 text-white" />
-                </Button>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative text-white hover:text-farm-mint hover:bg-transparent"
-                onClick={onCartClick}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-farm-mint text-farm-dark text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              </Button>
+              {!isPortalActive && (
+                <>
+                  <div className="hidden sm:flex items-center">
+                    <Input
+                      type="text"
+                      placeholder="Search..."
+                      className="w-40 lg:w-52 bg-farm-primary/50 border-farm-primary/50 text-white placeholder:text-white/50 rounded-r-none focus-visible:ring-farm-mint"
+                    />
+                    <Button
+                      size="icon"
+                      className="bg-farm-primary/70 hover:bg-farm-primary rounded-l-none border border-l-0 border-farm-primary/50"
+                    >
+                      <Search className="h-4 w-4 text-white" />
+                    </Button>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative text-white hover:text-farm-mint hover:bg-transparent"
+                    onClick={onCartClick}
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    <span className="absolute -top-1 -right-1 bg-farm-mint text-farm-dark text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  </Button>
+                </>
+              )}
+
               <Button
                 variant="default"
-                className="hidden sm:flex items-center gap-2 bg-farm-mint text-farm-dark hover:bg-farm-mint/90 px-4 py-2 rounded-md font-semibold ml-2 shadow-sm"
+                onClick={onPortalClick}
+                className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-md font-semibold ml-2 shadow-sm transition-all ${isPortalActive
+                  ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30 border border-red-500/50'
+                  : 'bg-farm-mint text-farm-dark hover:bg-farm-mint/90'
+                  }`}
               >
-                <LogOut className="h-4 w-4" />
-                <span>Logout</span>
+                {isPortalActive ? (
+                  <>
+                    <LogOut className="h-4 w-4" />
+                    <span>Exit Portal</span>
+                  </>
+                ) : (
+                  <>
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>Farmer Portal</span>
+                  </>
+                )}
               </Button>
             </div>
           </div>
         </div>
       </motion.nav>
+      ...
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>

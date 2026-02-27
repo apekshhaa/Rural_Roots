@@ -166,7 +166,9 @@ export function WarehouseSection() {
         if (!text.trim()) return;
 
         const newMsg = { role: 'user', content: text };
-        setChatHistory(prev => [...prev, newMsg]);
+        const assistantMsg = { role: 'assistant', content: '' };
+
+        setChatHistory(prev => [...prev, newMsg, assistantMsg]);
         setChatInput('');
         setIsTyping(true);
 
@@ -181,17 +183,58 @@ export function WarehouseSection() {
                         ...chatHistory.filter(m => m.role !== 'system'),
                         newMsg
                     ],
-                    stream: false
+                    stream: true
                 }),
             });
 
-            const data = await response.json();
-            const aiMsg = { role: 'assistant', content: data.message.content };
-            setChatHistory(prev => [...prev, aiMsg]);
-            if (isSpeaking) speakText(aiMsg.content);
+            if (!response.body) throw new Error('No response body');
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let fullContent = '';
+
+            setIsTyping(false); // Stop typing loader once stream starts
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split('\n');
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+                    try {
+                        const json = JSON.parse(line);
+                        if (json.message?.content) {
+                            fullContent += json.message.content;
+                            // Update the last message in history (the assistant message)
+                            setChatHistory(prev => {
+                                const newHistory = [...prev];
+                                newHistory[newHistory.length - 1] = {
+                                    role: 'assistant',
+                                    content: fullContent
+                                };
+                                return newHistory;
+                            });
+                        }
+                        if (json.done) break;
+                    } catch (e) {
+                        console.error('Error parsing chunk:', e);
+                    }
+                }
+            }
+
+            if (isSpeaking) speakText(fullContent);
         } catch (error) {
             console.error('Ollama Error:', error);
-            setChatHistory(prev => [...prev, { role: 'assistant', content: "Sorry, I'm having trouble connecting to my brain (Ollama). Please ensure it's running locally." }]);
+            setChatHistory(prev => {
+                const newHistory = [...prev];
+                newHistory[newHistory.length - 1] = {
+                    role: 'assistant',
+                    content: "Sorry, I'm having trouble connecting to my brain (Ollama). Please ensure it's running locally."
+                };
+                return newHistory;
+            });
         } finally {
             setIsTyping(false);
         }
