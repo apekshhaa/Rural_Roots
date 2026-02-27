@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navbar } from '@/components/layout/Navbar';
 import { CartDrawer } from '@/components/layout/CartDrawer';
 import { Footer } from '@/components/layout/Footer';
@@ -13,8 +14,9 @@ import { BlogSection } from '@/components/sections/BlogSection';
 import FarmerPortal from '@/components/sections/FarmerPortal';
 import { useCart } from '@/hooks/useCart';
 import type { Product } from '@/types';
+import Login from '@/components/Login';
 
-function App() {
+function Home() {
   const [view, setView] = useState<'landing' | 'portal'>('landing');
   const {
     items,
@@ -73,6 +75,17 @@ function App() {
       {/* Footer */}
       {view === 'landing' && <Footer />}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+      </Routes>
+    </Router>
   );
 }
 
