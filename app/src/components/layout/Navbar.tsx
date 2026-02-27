@@ -89,12 +89,14 @@ export function Navbar({ onPortalClick, isPortalActive }: NavbarProps) {
                   ))}
 
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
-                      Warehouse <ChevronDown className="h-4 w-4" />
+                    <DropdownMenuTrigger asChild>
+                      <a href="#warehouse" className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none cursor-pointer">
+                        Warehouse <ChevronDown className="h-4 w-4" />
+                      </a>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="bg-farm-dark border-white/10 text-white">
                       {harvestItems.map((item) => (
-                        <DropdownMenuItem key={item.name} className="hover:bg-white/10 cursor-pointer">
+                        <DropdownMenuItem key={item.name} asChild className="hover:bg-white/10 cursor-pointer">
                           <a href={item.href} className="flex items-center gap-2 w-full">
                             {item.icon} {item.name}
                           </a>
@@ -104,12 +106,14 @@ export function Navbar({ onPortalClick, isPortalActive }: NavbarProps) {
                   </DropdownMenu>
 
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
-                      Trends <ChevronDown className="h-4 w-4" />
+                    <DropdownMenuTrigger asChild>
+                      <a href="#trends" className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none cursor-pointer">
+                        Trends <ChevronDown className="h-4 w-4" />
+                      </a>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="bg-farm-dark border-white/10 text-white">
                       {trendsItems.map((item) => (
-                        <DropdownMenuItem key={item.name} className="hover:bg-white/10 cursor-pointer">
+                        <DropdownMenuItem key={item.name} asChild className="hover:bg-white/10 cursor-pointer">
                           <a href={item.href} className="flex items-center gap-2 w-full">
                             {item.icon} {item.name}
                           </a>
@@ -119,12 +123,14 @@ export function Navbar({ onPortalClick, isPortalActive }: NavbarProps) {
                   </DropdownMenu>
 
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
-                      Preference <ChevronDown className="h-4 w-4" />
+                    <DropdownMenuTrigger asChild>
+                      <a href="#preference" className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none cursor-pointer">
+                        Preference <ChevronDown className="h-4 w-4" />
+                      </a>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="bg-farm-dark border-white/10 text-white">
                       {preferenceItems.map((item) => (
-                        <DropdownMenuItem key={item.name} className="hover:bg-white/10 cursor-pointer">
+                        <DropdownMenuItem key={item.name} asChild className="hover:bg-white/10 cursor-pointer">
                           <a href={item.href} className="flex items-center gap-2 w-full">
                             {item.icon} {item.name}
                           </a>
@@ -223,7 +229,7 @@ export function Navbar({ onPortalClick, isPortalActive }: NavbarProps) {
 
                 <div className="flex flex-col gap-2 pt-2">
                   <span className="text-white/40 text-sm uppercase tracking-widest font-bold">Services</span>
-                  {harvestItems.map((item, index) => (
+                  {harvestItems.map((item) => (
                     <a
                       key={item.name}
                       href={item.href}
@@ -233,7 +239,7 @@ export function Navbar({ onPortalClick, isPortalActive }: NavbarProps) {
                       {item.name}
                     </a>
                   ))}
-                  {trendsItems.map((item, index) => (
+                  {trendsItems.map((item) => (
                     <a
                       key={item.name}
                       href={item.href}
