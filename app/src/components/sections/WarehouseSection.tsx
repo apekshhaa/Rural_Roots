@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Search,
@@ -20,39 +20,73 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionLabel } from '@/components/shared/SectionLabel';
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // --- DATA ---
 const warehouses = [
-    { id: 1, name: "Green Valley Cold", type: "Cold Storage", icon: <Snowflake className="h-6 w-6" />, location: "Doddaballapur", dist: 2.3, price: 450, capacity: "500 qtl", rating: 4.8, features: ["Temp Ctrl", "Insurance"], color: "bg-[#ddefdd]", image: "/images/warehouses/cold_storage.png", recommended: true, position: { lat: 12.9716, lng: 77.5946 } },
-    { id: 2, name: "Kolar Grain Hub", type: "Grain Silo", icon: <Wheat className="h-6 w-6" />, location: "Kolar", dist: 5.7, price: 280, capacity: "1200 qtl", rating: 4.5, features: ["Pest Ctrl"], color: "bg-[#e8f0d8]", image: "/images/warehouses/grain_silo.png", recommended: true, position: { lat: 13.0216, lng: 77.6146 } },
-    { id: 3, name: "Nandi Dry Store", type: "Dry Warehouse", icon: <Box className="h-6 w-6" />, location: "Nandi Hills", dist: 7.1, price: 320, capacity: "800 qtl", rating: 4.6, features: ["24/7 Security"], color: "bg-[#f0edd8]", image: "/images/warehouses/dry_warehouse.png", recommended: true, position: { lat: 13.0516, lng: 77.5646 } },
-    { id: 4, name: "Hosakote Cold", type: "Cold Storage", icon: <Snowflake className="h-6 w-6" />, location: "Hosakote", dist: 9.4, price: 580, capacity: "300 qtl", rating: 4.7, features: ["–5°C Capable"], color: "bg-[#d8edf5]", image: "/images/warehouses/cold_storage.png", recommended: false, position: { lat: 13.0016, lng: 77.6746 } },
-    { id: 5, name: "Devanahalli Hub", type: "Dry Warehouse", icon: <Box className="h-6 w-6" />, location: "Near Airport", dist: 12.2, price: 260, capacity: "2000 qtl", rating: 4.3, features: ["Loading Dock"], color: "bg-[#f5e8d8]", image: "/images/warehouses/dry_warehouse.png", recommended: false, position: { lat: 13.1216, lng: 77.6446 } },
-    { id: 6, name: "Tumkur Cold Chain", type: "Cold Storage", icon: <Snowflake className="h-6 w-6" />, location: "Tumkur", dist: 18.5, price: 520, capacity: "600 qtl", rating: 4.9, features: ["Power Backup"], color: "bg-[#dde8f5]", image: "/images/warehouses/cold_storage.png", recommended: false, position: { lat: 13.1716, lng: 77.4946 } },
-    { id: 7, name: "Hebbal Agri-Link", type: "Dry Warehouse", icon: <Box className="h-6 w-6" />, location: "Hebbal North", dist: 4.1, price: 310, capacity: "450 qtl", rating: 4.4, features: ["Smart Mon."], color: "bg-[#f5f5f5]", image: "/images/warehouses/dry_warehouse.png", recommended: false, position: { lat: 13.0116, lng: 77.6046 } },
-    { id: 8, name: "Whitefield Cold", type: "Cold Storage", icon: <Snowflake className="h-6 w-6" />, location: "Whitefield", dist: 14.5, price: 490, capacity: "700 qtl", rating: 4.7, features: ["Prec. Cooling"], color: "bg-[#e3f2fd]", image: "/images/warehouses/cold_storage.png", recommended: false, position: { lat: 12.9516, lng: 77.7146 } },
-    { id: 9, name: "Peenya Industrial", type: "Refrigerated", icon: <Snowflake className="h-6 w-6" />, location: "Peenya Industrial", dist: 8.2, price: 550, capacity: "350 qtl", rating: 4.2, features: ["Heavy Dock"], color: "bg-[#e8eaf6]", image: "/images/warehouses/cold_storage.png", recommended: false, position: { lat: 13.0316, lng: 77.5146 } },
-    { id: 10, name: "Electronic City", type: "Grain Silo", icon: <Wheat className="h-6 w-6" />, location: "South Bengaluru", dist: 15.8, price: 270, capacity: "1500 qtl", rating: 4.6, features: ["Automated Venting"], color: "bg-[#fff3e0]", image: "/images/warehouses/grain_silo.png", recommended: false, position: { lat: 12.8516, lng: 77.6446 } },
-    { id: 11, name: "Yelahanka Food Park", type: "Cold Storage", icon: <Snowflake className="h-6 w-6" />, location: "North Bengaluru", dist: 11.1, price: 480, capacity: "900 qtl", rating: 4.5, features: ["FSSAI Cert."], color: "bg-[#f1f8e9]", image: "/images/warehouses/cold_storage.png", recommended: false, position: { lat: 13.0816, lng: 77.5746 } },
-    { id: 12, name: "Bidadi Mega Hub", type: "Dry Warehouse", icon: <Box className="h-6 w-6" />, location: "Mysuru Road", dist: 22.4, price: 240, capacity: "5000 qtl", rating: 4.1, features: ["Massive Cap."], color: "bg-[#efebe9]", image: "/images/warehouses/dry_warehouse.png", recommended: false, position: { lat: 12.8216, lng: 77.4746 } },
+    { id: 1, name: "Green Valley Cold", type: "Cold Storage", icon: <Snowflake className="h-6 w-6" />, location: "Doddaballapur", dist: 2.3, price: 4.5, capacity: "500 qtl", rating: 4.8, features: ["Temp Ctrl", "Insurance"], color: "bg-[#ddefdd]", image: "/images/warehouses/cold_storage.png", recommended: true, position: { lat: 12.9716, lng: 77.5946 } },
+    { id: 2, name: "Kolar Grain Hub", type: "Grain Silo", icon: <Wheat className="h-6 w-6" />, location: "Kolar", dist: 5.7, price: 2.8, capacity: "1200 qtl", rating: 4.5, features: ["Pest Ctrl"], color: "bg-[#e8f0d8]", image: "/images/warehouses/grain_silo.png", recommended: true, position: { lat: 13.0216, lng: 77.6146 } },
+    { id: 3, name: "Nandi Dry Store", type: "Dry Warehouse", icon: <Box className="h-6 w-6" />, location: "Nandi Hills", dist: 7.1, price: 3.2, capacity: "800 qtl", rating: 4.6, features: ["24/7 Security"], color: "bg-[#f0edd8]", image: "/images/warehouses/dry_warehouse.png", recommended: true, position: { lat: 13.0516, lng: 77.5646 } },
+    { id: 4, name: "Hosakote Cold", type: "Cold Storage", icon: <Snowflake className="h-6 w-6" />, location: "Hosakote", dist: 9.4, price: 5.8, capacity: "300 qtl", rating: 4.7, features: ["–5°C Capable"], color: "bg-[#d8edf5]", image: "/images/warehouses/cold_storage.png", recommended: false, position: { lat: 13.0016, lng: 77.6746 } },
+    { id: 5, name: "Devanahalli Hub", type: "Dry Warehouse", icon: <Box className="h-6 w-6" />, location: "Near Airport", dist: 12.2, price: 2.6, capacity: "2000 qtl", rating: 4.3, features: ["Loading Dock"], color: "bg-[#f5e8d8]", image: "/images/warehouses/dry_warehouse.png", recommended: false, position: { lat: 13.1216, lng: 77.6446 } },
+    { id: 6, name: "Tumkur Cold Chain", type: "Cold Storage", icon: <Snowflake className="h-6 w-6" />, location: "Tumkur", dist: 18.5, price: 5.2, capacity: "600 qtl", rating: 4.9, features: ["Power Backup"], color: "bg-[#dde8f5]", image: "/images/warehouses/cold_storage.png", recommended: false, position: { lat: 13.1716, lng: 77.4946 } },
+    { id: 7, name: "Hebbal Agri-Link", type: "Dry Warehouse", icon: <Box className="h-6 w-6" />, location: "Hebbal North", dist: 4.1, price: 3.1, capacity: "450 qtl", rating: 4.4, features: ["Smart Mon."], color: "bg-[#f5f5f5]", image: "/images/warehouses/dry_warehouse.png", recommended: false, position: { lat: 13.0116, lng: 77.6046 } },
+    { id: 8, name: "Whitefield Cold", type: "Cold Storage", icon: <Snowflake className="h-6 w-6" />, location: "Whitefield", dist: 14.5, price: 4.9, capacity: "700 qtl", rating: 4.7, features: ["Prec. Cooling"], color: "bg-[#e3f2fd]", image: "/images/warehouses/cold_storage.png", recommended: false, position: { lat: 12.9516, lng: 77.7146 } },
+    { id: 9, name: "Peenya Industrial", type: "Refrigerated", icon: <Snowflake className="h-6 w-6" />, location: "Peenya Industrial", dist: 8.2, price: 5.5, capacity: "350 qtl", rating: 4.2, features: ["Heavy Dock"], color: "bg-[#e8eaf6]", image: "/images/warehouses/cold_storage.png", recommended: false, position: { lat: 13.0316, lng: 77.5146 } },
+    { id: 10, name: "Electronic City", type: "Grain Silo", icon: <Wheat className="h-6 w-6" />, location: "South Bengaluru", dist: 15.8, price: 2.7, capacity: "1500 qtl", rating: 4.6, features: ["Automated Venting"], color: "bg-[#fff3e0]", image: "/images/warehouses/grain_silo.png", recommended: false, position: { lat: 12.8516, lng: 77.6446 } },
+    { id: 11, name: "Yelahanka Food Park", type: "Cold Storage", icon: <Snowflake className="h-6 w-6" />, location: "North Bengaluru", dist: 11.1, price: 4.8, capacity: "900 qtl", rating: 4.5, features: ["FSSAI Cert."], color: "bg-[#f1f8e9]", image: "/images/warehouses/cold_storage.png", recommended: false, position: { lat: 13.0816, lng: 77.5746 } },
+    { id: 12, name: "Bidadi Mega Hub", type: "Dry Warehouse", icon: <Box className="h-6 w-6" />, location: "Mysuru Road", dist: 22.4, price: 2.4, capacity: "5000 qtl", rating: 4.1, features: ["Massive Cap."], color: "bg-[#efebe9]", image: "/images/warehouses/dry_warehouse.png", recommended: false, position: { lat: 12.8216, lng: 77.4746 } },
 ];
-
-const containerStyle = {
-    width: '100%',
-    height: '100%'
-};
 
 const center = {
     lat: 12.9716,
     lng: 77.5946
 };
 
+// Leaflet marker icons
+const userIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+const warehouseIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+const recommendedIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+// Helper component to recenter the map
+function MapRecenter({ lat, lng }: { lat: number; lng: number }) {
+    const map = useMap();
+    useEffect(() => {
+        map.setView([lat, lng]);
+    }, [lat, lng, map]);
+    return null;
+}
+
 export function WarehouseSection() {
     // --- UI & Filter States ---
     const [selectedRadius, setSelectedRadius] = useState(10);
     const [selectedType, setSelectedType] = useState('All');
-    const [maxPrice, setMaxPrice] = useState(1000);
+    const [maxPrice, setMaxPrice] = useState(50);
     const [userLocation, setUserLocation] = useState(center);
     const [locationLabel, setLocationLabel] = useState('Detecting...');
 
@@ -65,11 +99,6 @@ export function WarehouseSection() {
 
     // --- Map States ---
     const [selectedMarker, setSelectedMarker] = useState<any>(null);
-    const [map, setMap] = useState<google.maps.Map | null>(null);
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: "" // User can add their API key here
-    });
 
     // --- Chat & Ollama & Voice States ---
     const [isChatOpen, setIsChatOpen] = useState(false);
@@ -111,22 +140,35 @@ export function WarehouseSection() {
     }, []);
 
     // --- Callbacks & Effects ---
-    const onLoad = useCallback(function callback(map: google.maps.Map) {
-        setMap(map);
-    }, []);
 
-    const onUnmount = useCallback(function callback(_map: google.maps.Map) {
-        setMap(null);
-    }, []);
+
+    const [dynamicWarehouses, setDynamicWarehouses] = useState(warehouses);
+
+    useEffect(() => {
+        const updated = warehouses.map((w, index) => {
+            const angle = (index * (360 / warehouses.length)) * (Math.PI / 180);
+            const rLat = w.dist / 111;
+            const rLng = w.dist / (111 * Math.cos(userLocation.lat * (Math.PI / 180)));
+
+            return {
+                ...w,
+                position: {
+                    lat: userLocation.lat + rLat * Math.cos(angle),
+                    lng: userLocation.lng + rLng * Math.sin(angle)
+                }
+            };
+        });
+        setDynamicWarehouses(updated);
+    }, [userLocation]);
 
     const filteredWarehouses = useMemo(() => {
-        return warehouses.filter(w => {
+        return dynamicWarehouses.filter(w => {
             const withinRadius = w.dist <= selectedRadius;
             const typeMatch = selectedType === 'All' || w.type === selectedType;
             const priceMatch = w.price <= maxPrice;
             return withinRadius && typeMatch && priceMatch;
         });
-    }, [selectedRadius, selectedType, maxPrice]);
+    }, [selectedRadius, selectedType, maxPrice, dynamicWarehouses]);
 
     const detectLocation = () => {
         setLocationLabel('Detecting...');
@@ -138,7 +180,7 @@ export function WarehouseSection() {
                 };
                 setUserLocation(pos);
                 setLocationLabel(`${pos.lat.toFixed(4)}° N, ${pos.lng.toFixed(4)}° E`);
-                if (map) map.panTo(pos);
+                // Map will auto-recenter via MapRecenter component
             }, () => {
                 setLocationLabel('Bengaluru Center');
             });
@@ -358,21 +400,21 @@ export function WarehouseSection() {
 
                                 <div className="pt-6 border-t border-farm-mint/10">
                                     <div className="flex justify-between items-center mb-4">
-                                        <span className="text-xs uppercase tracking-widest font-bold text-farm-muted">Max Price / Day</span>
+                                        <span className="text-xs uppercase tracking-widest font-bold text-farm-muted">Max Price / kg / month</span>
                                         <span className="text-sm font-bold text-farm-primary">₹{maxPrice}</span>
                                     </div>
                                     <input
                                         type="range"
-                                        min={100}
-                                        max={1000}
-                                        step={10}
+                                        min={1}
+                                        max={50}
+                                        step={1}
                                         value={maxPrice}
                                         onChange={(e) => setMaxPrice(Number(e.target.value))}
                                         className="w-full h-1.5 bg-farm-mint/20 rounded-lg appearance-none cursor-pointer accent-farm-primary"
                                     />
                                     <div className="flex justify-between mt-2 text-[10px] text-farm-muted font-bold">
-                                        <span>₹100</span>
-                                        <span>₹1000</span>
+                                        <span>₹1</span>
+                                        <span>₹50</span>
                                     </div>
                                 </div>
 
@@ -393,148 +435,147 @@ export function WarehouseSection() {
 
                     {/* Map + Cards */}
                     <div className="space-y-6 flex flex-col min-h-0">
-                        {/* Interactive Google Map */}
+                        {/* Interactive Map */}
                         <div className="h-[320px] bg-farm-mint/10 rounded-2xl relative overflow-hidden shadow-inner border border-farm-mint/20 flex-shrink-0">
-                            {isLoaded ? (
-                                <GoogleMap
-                                    mapContainerStyle={containerStyle}
-                                    center={userLocation}
-                                    zoom={11}
-                                    onLoad={onLoad}
-                                    onUnmount={onUnmount}
-                                    options={{
-                                        disableDefaultUI: true,
-                                        zoomControl: true,
-                                        styles: [
-                                            {
-                                                "featureType": "all",
-                                                "elementType": "geometry.fill",
-                                                "stylers": [{ "color": "#e8f5ee" }]
-                                            },
-                                            {
-                                                "featureType": "water",
-                                                "stylers": [{ "color": "#c8e6d5" }]
-                                            }
-                                        ]
-                                    }}
-                                >
+                            <MapContainer
+                                center={[userLocation.lat, userLocation.lng]}
+                                zoom={11}
+                                style={{ width: '100%', height: '100%' }}
+                                zoomControl={true}
+                            >
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                <MapRecenter lat={userLocation.lat} lng={userLocation.lng} />
+
+                                {/* User location marker */}
+                                <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon}>
+                                    <Popup>
+                                        <div className="text-sm font-bold text-farm-dark">📍 Your Location</div>
+                                    </Popup>
+                                </Marker>
+
+                                {/* Warehouse markers */}
+                                {filteredWarehouses.map(w => (
                                     <Marker
-                                        position={userLocation}
-                                        icon={{
-                                            path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
-                                            fillColor: "#2d5a45",
-                                            fillOpacity: 1,
-                                            strokeColor: "#ffffff",
-                                            strokeWeight: 2,
-                                            scale: 1.5,
-                                            anchor: new google.maps.Point(12, 22)
+                                        key={w.id}
+                                        position={[w.position.lat, w.position.lng]}
+                                        icon={w.recommended ? recommendedIcon : warehouseIcon}
+                                        eventHandlers={{
+                                            click: () => setSelectedMarker(w),
                                         }}
-                                    />
-
-                                    {filteredWarehouses.map(w => (
-                                        <Marker
-                                            key={w.id}
-                                            position={w.position}
-                                            onClick={() => setSelectedMarker(w)}
-                                            icon={{
-                                                path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
-                                                fillColor: w.recommended ? "#1a3d2e" : "#5fa05a",
-                                                fillOpacity: 1,
-                                                strokeColor: "#ffffff",
-                                                strokeWeight: 1.5,
-                                                scale: 1.2
-                                            }}
-                                        />
-                                    ))}
-
-                                    {selectedMarker && (
-                                        <InfoWindow
-                                            position={selectedMarker.position}
-                                            onCloseClick={() => setSelectedMarker(null)}
-                                        >
-                                            <div className="p-2 min-w-[150px]">
-                                                <h4 className="font-bold text-sm text-farm-dark">{selectedMarker.name}</h4>
-                                                <p className="text-[10px] text-farm-muted">{selectedMarker.type}</p>
-                                                <div className="flex items-center justify-between mt-2">
-                                                    <span className="font-bold text-farm-primary">₹{selectedMarker.price}/day</span>
-                                                    <Button
-                                                        size="sm"
-                                                        className="h-7 text-[10px] bg-farm-primary text-white"
-                                                        onClick={() => openBooking(selectedMarker)}
+                                    >
+                                        <Popup>
+                                            <div className="p-1 min-w-[150px]">
+                                                <h4 style={{ fontWeight: 'bold', fontSize: '14px', margin: '0 0 4px 0' }}>{w.name}</h4>
+                                                <p style={{ fontSize: '11px', color: '#888', margin: '0 0 8px 0' }}>{w.type}</p>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <span style={{ fontWeight: 'bold', color: '#2d5a45' }}>₹{w.price}/kg/mo</span>
+                                                    <button
+                                                        onClick={() => openBooking(w)}
+                                                        style={{
+                                                            background: '#2d5a45',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            padding: '4px 12px',
+                                                            borderRadius: '6px',
+                                                            fontSize: '11px',
+                                                            fontWeight: 'bold',
+                                                            cursor: 'pointer'
+                                                        }}
                                                     >
                                                         Book
-                                                    </Button>
+                                                    </button>
                                                 </div>
                                             </div>
-                                        </InfoWindow>
-                                    )}
-                                </GoogleMap>
-                            ) : (
-                                <div className="absolute inset-0 flex items-center justify-center flex-col text-center">
-                                    <MapPin className="h-12 w-12 text-farm-primary mb-3 animate-pulse" />
-                                    <h3 className="font-serif text-lg font-semibold text-farm-dark">Loading Maps...</h3>
-                                </div>
-                            )}
+                                        </Popup>
+                                    </Marker>
+                                ))}
+                            </MapContainer>
                         </div>
 
                         {/* Warehouse Grid with Scroll Constraint */}
-                        <div className="grid md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                            {filteredWarehouses.map(w => (
+                        <div className="grid md:grid-cols-2 gap-5 max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
+                            {filteredWarehouses.map((w, index) => (
                                 <motion.div
-                                    layout
                                     key={w.id}
-                                    className={`bg-white rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-xl group h-fit ${w.recommended ? 'border-farm-mint shadow-md ring-1 ring-farm-mint/20' : 'border-farm-mint/10'
+                                    initial={{ opacity: 0, y: 20, scale: 0.97 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    transition={{ duration: 0.4, delay: 0.07 * index, ease: [0.25, 0.46, 0.45, 0.94] }}
+                                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                                    className={`bg-white rounded-2xl border transition-shadow duration-300 hover:shadow-2xl group flex flex-col ${w.recommended ? 'border-farm-mint shadow-lg ring-2 ring-farm-mint/20' : 'border-gray-100 shadow-sm'
                                         }`}
                                 >
-                                    <div className="h-32 relative overflow-hidden">
+                                    {/* Image Section */}
+                                    <div className="h-40 relative overflow-hidden flex-shrink-0 rounded-t-2xl">
                                         <img
                                             src={w.image}
                                             alt={w.name}
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                                         />
-                                        <div className="absolute inset-0 bg-farm-dark/20 group-hover:bg-farm-dark/10 transition-colors" />
+                                        {/* Gradient overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                                        {/* Shine effect on hover */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+
                                         {w.recommended && (
-                                            <div className="absolute top-3 left-3 bg-farm-dark text-white text-[9px] font-bold px-2 py-1 rounded flex items-center gap-1">
-                                                <Star className="h-3 w-3 text-farm-mint" /> AI PICK
+                                            <div className="absolute top-3 left-3 bg-farm-dark/90 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-lg">
+                                                <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" /> AI PICK
                                             </div>
                                         )}
-                                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-[9px] font-bold text-farm-dark">
+                                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-full text-[10px] font-bold text-farm-dark shadow-md flex items-center gap-1">
+                                            <Navigation className="h-2.5 w-2.5 text-farm-primary" />
                                             {w.dist} km
+                                        </div>
+
+                                        {/* Bottom overlay with name on image */}
+                                        <div className="absolute bottom-0 left-0 right-0 p-3">
+                                            <h4 className="font-serif font-bold text-white text-lg leading-tight drop-shadow-lg">{w.name}</h4>
+                                            <p className="text-[11px] text-white/80 flex items-center gap-1 mt-0.5 drop-shadow">
+                                                <MapPin className="h-3 w-3" /> {w.location}
+                                            </p>
                                         </div>
                                     </div>
 
+                                    {/* Content Section */}
                                     <div className="p-4">
-                                        <div className="flex justify-between items-start mb-1">
-                                            <h4 className="font-serif font-semibold text-farm-dark text-base leading-tight">{w.name}</h4>
-                                            <div className="flex items-center gap-1 text-farm-primary">
-                                                <Star className="h-3 w-3 fill-current" />
-                                                <span className="text-xs font-bold">{w.rating}</span>
+                                        {/* Type + Rating */}
+                                        <div className="flex justify-between items-center mb-3">
+                                            <span className="text-[11px] font-bold text-farm-primary bg-farm-mint/15 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                                                <span className="[&>svg]:h-3.5 [&>svg]:w-3.5">{w.icon}</span>
+                                                {w.type}
+                                            </span>
+                                            <div className="flex items-center gap-1 bg-yellow-50 px-2 py-0.5 rounded-full">
+                                                <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                                                <span className="text-sm font-bold text-farm-dark">{w.rating}</span>
                                             </div>
                                         </div>
 
-                                        <p className="text-[10px] text-farm-muted mb-3 flex items-center gap-1">
-                                            <MapPin className="h-2.5 w-2.5" /> {w.location}
-                                        </p>
-
+                                        {/* Features */}
                                         <div className="flex flex-wrap gap-1.5 mb-4">
                                             {w.features.map((f: string) => (
-                                                <span key={f} className="text-[9px] font-semibold bg-farm-mint/10 text-farm-primary px-1.5 py-0.5 rounded">
+                                                <span key={f} className="text-[10px] font-semibold bg-gray-50 text-farm-muted px-2 py-0.5 rounded-md border border-gray-100">
                                                     {f}
                                                 </span>
                                             ))}
+                                            <span className="text-[10px] font-semibold bg-gray-50 text-farm-muted px-2 py-0.5 rounded-md border border-gray-100">
+                                                {w.capacity}
+                                            </span>
                                         </div>
 
-                                        <div className="flex items-center justify-between pt-3 border-t border-farm-mint/10">
-                                            <div>
-                                                <span className="text-lg font-bold text-farm-dark">₹{w.price}</span>
-                                                <span className="text-[10px] text-farm-muted"> /day</span>
+                                        {/* Price + Book - pushed to bottom */}
+                                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                            <div className="bg-farm-mint/10 px-3 py-1.5 rounded-xl">
+                                                <span className="text-xl font-bold text-farm-dark">₹{w.price}</span>
+                                                <span className="text-xs font-medium text-farm-muted ml-0.5">/kg/mo</span>
                                             </div>
                                             <Button
                                                 size="sm"
                                                 onClick={() => openBooking(w)}
-                                                className="bg-farm-primary hover:bg-farm-dark text-white rounded-lg px-4 h-9"
+                                                className="bg-farm-primary hover:bg-farm-dark text-white rounded-xl px-5 h-10 font-bold text-sm transition-all duration-200 hover:shadow-lg hover:shadow-farm-primary/25"
                                             >
-                                                Book
+                                                Book Now
                                             </Button>
                                         </div>
                                     </div>
@@ -583,7 +624,7 @@ export function WarehouseSection() {
                                             </div>
                                             <div className="ml-auto text-right">
                                                 <p className="text-lg font-bold text-farm-primary">₹{currentWarehouse?.price}</p>
-                                                <p className="text-[10px] text-farm-muted uppercase font-bold tracking-widest">per day</p>
+                                                <p className="text-[10px] text-farm-muted uppercase font-bold tracking-widest">per kg/month</p>
                                             </div>
                                         </div>
 
