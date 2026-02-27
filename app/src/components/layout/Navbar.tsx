@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Search, ShoppingCart, ChevronDown, ExternalLink } from 'lucide-react';
+import { LogOut, X, Search, ShoppingCart, ChevronDown, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -45,32 +45,15 @@ export function Navbar({ cartCount, onCartClick }: NavbarProps) {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
             ? 'bg-farm-dark/95 backdrop-blur-md shadow-lg'
             : 'bg-farm-dark/80'
-        }`}
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-[72px]">
             {/* Left: Menu Button + Logo */}
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden text-farm-dark bg-farm-mint hover:bg-farm-mint/90 rounded-md"
-                onClick={() => setMobileMenuOpen(true)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                className="hidden lg:flex items-center gap-2 text-farm-dark bg-farm-mint hover:bg-farm-mint/90 px-4 py-2 rounded-md font-medium"
-                onClick={() => setMobileMenuOpen(true)}
-              >
-                <Menu className="h-5 w-5" />
-                <span>Menu</span>
-              </Button>
               <a
                 href="#"
                 className="text-2xl font-serif font-semibold text-white tracking-wide"
@@ -154,6 +137,13 @@ export function Navbar({ cartCount, onCartClick }: NavbarProps) {
                 <span className="absolute -top-1 -right-1 bg-farm-mint text-farm-dark text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   {cartCount}
                 </span>
+              </Button>
+              <Button
+                variant="default"
+                className="hidden sm:flex items-center gap-2 bg-farm-mint text-farm-dark hover:bg-farm-mint/90 px-4 py-2 rounded-md font-semibold ml-2 shadow-sm"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
               </Button>
             </div>
           </div>

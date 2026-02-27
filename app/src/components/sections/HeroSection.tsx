@@ -86,9 +86,9 @@ export function HeroSection() {
           variants={itemVariants}
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-semibold text-white leading-tight mb-10"
         >
-          From Our Farm to Your
+          Empowering Farmers
           <br />
-          Table, Pure and Organic
+          Beyond Harvest
         </motion.h1>
 
         {/* CTA Buttons */}
@@ -104,10 +104,10 @@ export function HeroSection() {
           </Button>
           <Button
             asChild
-            variant="outline"
-            className="border-white/50 text-white hover:bg-white/10 hover:border-white px-8 py-6 text-base font-medium rounded-md transition-all duration-200 hover:scale-105"
+            variant="default"
+            className="bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 px-8 py-6 text-base font-medium rounded-md transition-all duration-200 hover:scale-105"
           >
-            <a href="#selection">Discover</a>
+            <a href="#warehouse">Discover</a>
           </Button>
         </motion.div>
       </motion.div>

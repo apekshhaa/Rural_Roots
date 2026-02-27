@@ -3,7 +3,7 @@ import { CartDrawer } from '@/components/layout/CartDrawer';
 import { Footer } from '@/components/layout/Footer';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { AboutSection } from '@/components/sections/AboutSection';
-import { SelectionSection } from '@/components/sections/SelectionSection';
+import { WarehouseSection } from '@/components/sections/WarehouseSection';
 import { SustainableSection } from '@/components/sections/SustainableSection';
 import { FarmSection } from '@/components/sections/FarmSection';
 import { GallerySection } from '@/components/sections/GallerySection';
@@ -48,7 +48,7 @@ function App() {
       <main>
         <HeroSection />
         <AboutSection />
-        <SelectionSection />
+        <WarehouseSection />
         <SustainableSection />
         <FarmSection />
         <GallerySection />
