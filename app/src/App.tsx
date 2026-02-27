@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navbar } from '@/components/layout/Navbar';
 import { CartDrawer } from '@/components/layout/CartDrawer';
 import { Footer } from '@/components/layout/Footer';
@@ -11,8 +12,9 @@ import { ShopSection } from '@/components/sections/ShopSection';
 import { BlogSection } from '@/components/sections/BlogSection';
 import { useCart } from '@/hooks/useCart';
 import type { Product } from '@/types';
+import Login from '@/components/Login';
 
-function App() {
+function Home() {
   const {
     items,
     isOpen,
@@ -59,6 +61,17 @@ function App() {
       {/* Footer */}
       <Footer />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+      </Routes>
+    </Router>
   );
 }
 
