@@ -27,9 +27,9 @@ const harvestItems = [
 ];
 
 const trendsItems = [
-  { name: 'Crop Trends', href: '#trends', icon: <TrendingUp className="h-4 w-4" /> },
-  { name: 'Weather Forecast', href: '#weather', icon: <Sprout className="h-4 w-4" /> },
-  { name: 'Soil Health', href: '#soil', icon: <Settings className="h-4 w-4" /> },
+  { name: 'Crop Trends', href: '#farm', icon: <TrendingUp className="h-4 w-4" /> },
+  { name: 'Weather Forecast', href: '#farm', icon: <Sprout className="h-4 w-4" /> },
+  { name: 'Soil Health', href: '#farm', icon: <Settings className="h-4 w-4" /> },
 ];
 
 const preferenceItems = [
@@ -223,7 +223,7 @@ export function Navbar({ onPortalClick, isPortalActive }: NavbarProps) {
 
                 <div className="flex flex-col gap-2 pt-2">
                   <span className="text-white/40 text-sm uppercase tracking-widest font-bold">Services</span>
-                  {harvestItems.map((item, index) => (
+                  {harvestItems.map((item) => (
                     <a
                       key={item.name}
                       href={item.href}
@@ -233,7 +233,7 @@ export function Navbar({ onPortalClick, isPortalActive }: NavbarProps) {
                       {item.name}
                     </a>
                   ))}
-                  {trendsItems.map((item, index) => (
+                  {trendsItems.map((item) => (
                     <a
                       key={item.name}
                       href={item.href}
