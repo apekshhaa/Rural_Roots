@@ -27,9 +27,9 @@ const harvestItems = [
 ];
 
 const trendsItems = [
-  { name: 'Crop Trends', href: '#trends', icon: <TrendingUp className="h-4 w-4" /> },
-  { name: 'Weather Forecast', href: '#weather', icon: <Sprout className="h-4 w-4" /> },
-  { name: 'Soil Health', href: '#soil', icon: <Settings className="h-4 w-4" /> },
+  { name: 'Crop Trends', href: '#farm', icon: <TrendingUp className="h-4 w-4" /> },
+  { name: 'Weather Forecast', href: '#farm', icon: <Sprout className="h-4 w-4" /> },
+  { name: 'Soil Health', href: '#farm', icon: <Settings className="h-4 w-4" /> },
 ];
 
 const preferenceItems = [
