@@ -419,6 +419,7 @@ export function KrishiSightDashboard() {
             }
         };
 
+        // @ts-ignore
         chartInstance.current = new Chart(ctx, config);
 
         return () => {

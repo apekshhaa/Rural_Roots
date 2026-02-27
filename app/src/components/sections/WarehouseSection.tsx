@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Search,
@@ -23,6 +23,28 @@ import { SectionLabel } from '@/components/shared/SectionLabel';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+interface Warehouse {
+    id: number;
+    name: string;
+    type: string;
+    icon: React.ReactNode;
+    location: string;
+    dist: number;
+    price: number;
+    capacity: string;
+    rating: number;
+    features: string[];
+    color: string;
+    image: string;
+    recommended: boolean;
+    position: { lat: number; lng: number };
+}
+
+interface ChatMessage {
+    role: 'user' | 'assistant' | 'system';
+    content: string;
+}
 
 // --- DATA ---
 const warehouses = [
@@ -92,19 +114,19 @@ export function WarehouseSection() {
 
     // --- Booking States ---
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-    const [currentWarehouse, setCurrentWarehouse] = useState<any>(null);
+    const [currentWarehouse, setCurrentWarehouse] = useState<Warehouse | null>(null);
     const [bookingConfirmed, setBookingConfirmed] = useState(false);
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
 
     // --- Map States ---
-    const [selectedMarker, setSelectedMarker] = useState<any>(null);
+
 
     // --- Chat & Ollama & Voice States ---
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isCaptureActive, setIsCaptureActive] = useState(false);
     const [selectedLang, setSelectedLang] = useState('kn-IN');
-    const [chatHistory, setChatHistory] = useState<any[]>([
+    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
         { role: 'assistant', content: "ನಮಸ್ಕಾರ ರೈತರೇ! ನಾನು ನಿಮ್ಮ ಎಐ ಮಾರ್ಗದರ್ಶಿ. ಶೀತಲ ಸಂಗ್ರಹಣೆಯನ್ನು ಹುಡುಕಲು ಅಥವಾ ಸುಗ್ಗಿಯ ತಯಾರಿಗೆ ನಿಮಗೆ ಸಹಾಯ ಬೇಕೇ? ನನ್ನನ್ನು ಏನು ಬೇಕಾದರೂ ಕೇಳಿ!" }
     ]);
     const [isTyping, setIsTyping] = useState(false);
@@ -207,8 +229,8 @@ export function WarehouseSection() {
     const sendMessageToOllama = async (text: string) => {
         if (!text.trim()) return;
 
-        const newMsg = { role: 'user', content: text };
-        const assistantMsg = { role: 'assistant', content: '' };
+        const newMsg: ChatMessage = { role: 'user', content: text };
+        const assistantMsg: ChatMessage = { role: 'assistant', content: '' };
 
         setChatHistory(prev => [...prev, newMsg, assistantMsg]);
         setChatInput('');
@@ -221,7 +243,7 @@ export function WarehouseSection() {
                 body: JSON.stringify({
                     model: 'llama3',
                     messages: [
-                        { role: 'system', content: `You are "Harvest Helper," a polite agricultural assistant for the Rural Roots platform. You MUST respond ONLY in ${languages.find(l => l.code === selectedLang)?.label}. Keep answers short, practical, and culturally relevant. Help users with warehouse booking, crop storage, and post-harvest tips.` },
+                        { role: 'system' as const, content: `You are "Harvest Helper," a polite agricultural assistant for the Rural Roots platform. You MUST respond ONLY in ${languages.find(l => l.code === selectedLang)?.label}. Keep answers short, practical, and culturally relevant. Help users with warehouse booking, crop storage, and post-harvest tips.` },
                         ...chatHistory.filter(m => m.role !== 'system'),
                         newMsg
                     ],
@@ -463,7 +485,7 @@ export function WarehouseSection() {
                                         position={[w.position.lat, w.position.lng]}
                                         icon={w.recommended ? recommendedIcon : warehouseIcon}
                                         eventHandlers={{
-                                            click: () => setSelectedMarker(w),
+                                            click: () => setCurrentWarehouse(w),
                                         }}
                                     >
                                         <Popup>
@@ -657,7 +679,7 @@ export function WarehouseSection() {
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="text-xs text-farm-muted font-bold">Total Estimated Cost</p>
-                                                    <p className="text-xl font-bold text-farm-primary">₹{(durationDays * currentWarehouse?.price || 0).toLocaleString()}</p>
+                                                    <p className="text-xl font-bold text-farm-primary">₹{(durationDays * (currentWarehouse?.price ?? 0)).toLocaleString()}</p>
                                                 </div>
                                             </div>
                                         )}
