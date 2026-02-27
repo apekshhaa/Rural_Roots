@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, X, Search, ShoppingCart, ChevronDown, ExternalLink, LayoutDashboard, Menu } from 'lucide-react';
+import { LogOut, X, LayoutDashboard, Menu, ChevronDown, Sprout, TrendingUp, Settings, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,73 +10,38 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
-import { products, blogPosts } from '@/data/content';
 
 interface NavbarProps {
-  cartCount: number;
-  onCartClick: () => void;
   onPortalClick: () => void;
   isPortalActive: boolean;
 }
 
 const navLinks = [
   { name: 'The Farm', href: '#about' },
-  { name: 'Warehouse', href: '#warehouse' },
-  { name: 'Blog', href: '#blog' },
-  { name: 'Contact', href: '#footer', external: true },
 ];
 
 const harvestItems = [
-  { name: 'Cold Storage', href: '#warehouse' },
-  { name: 'Grain Silo', href: '#warehouse' },
-  { name: 'Dry Store', href: '#warehouse' },
+  { name: 'Warehouse Booking', href: '#warehouse', icon: <Sprout className="h-4 w-4" /> },
+  { name: 'Market Prices', href: '#prices', icon: <TrendingUp className="h-4 w-4" /> },
+  { name: 'Equipment Rental', href: '#equipment', icon: <Settings className="h-4 w-4" /> },
 ];
 
-const exploreItems = [
-  { name: 'Gallery', href: '#gallery' },
-  { name: 'Online Shop', href: '#shop' },
-  { name: 'Our Story', href: '#about' },
+const trendsItems = [
+  { name: 'Crop Trends', href: '#farm', icon: <TrendingUp className="h-4 w-4" /> },
+  { name: 'Weather Forecast', href: '#farm', icon: <Sprout className="h-4 w-4" /> },
+  { name: 'Soil Health', href: '#farm', icon: <Settings className="h-4 w-4" /> },
 ];
 
 const preferenceItems = [
-  { name: 'SMS' },
-  { name: 'Phone Number' },
-  { name: 'In-person' },
+  { name: 'Language', href: '#language', icon: <Languages className="h-4 w-4" /> },
+  { name: 'Theme', href: '#theme', icon: <Settings className="h-4 w-4" /> },
+  { name: 'Notifications', href: '#notifications', icon: <Sprout className="h-4 w-4" /> },
 ];
 
-export function Navbar({ cartCount, onCartClick, onPortalClick, isPortalActive }: NavbarProps) {
+export function Navbar({ onPortalClick, isPortalActive }: NavbarProps) {
+  const navigate = useNavigate();
   const { isScrolled } = useScrollPosition();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<{ id: string, name: string, type: 'product' | 'post', href: string }[]>([]);
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (query.trim() === '') {
-      setSearchResults([]);
-      return;
-    }
-
-    const filteredProducts = products
-      .filter(p => p.name.toLowerCase().includes(query.toLowerCase()))
-      .map(p => ({ id: p.id, name: p.name, type: 'product' as const, href: '#shop' }));
-
-    const filteredPosts = blogPosts
-      .filter(p => (p.title || '').toLowerCase().includes(query.toLowerCase()))
-      .map(p => ({ id: p.id, name: p.title || '', type: 'post' as const, href: '#blog' }));
-
-    setSearchResults([...filteredProducts, ...filteredPosts]);
-  };
-
-  const handleResultClick = (href: string) => {
-    setSearchQuery('');
-    setSearchResults([]);
-    window.location.hash = href;
-  };
-
-  const handlePreferenceClick = (preference: string) => {
-    alert(`Preference ${preference} added successfully`);
-  };
 
   return (
     <>
@@ -120,78 +85,55 @@ export function Navbar({ cartCount, onCartClick, onPortalClick, isPortalActive }
                       className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1"
                     >
                       {link.name}
-                      {link.external && <ExternalLink className="h-3 w-3" />}
                     </a>
                   ))}
 
-                  {/* Harvest Dropdown */}
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
-                      Harvest
-                      <ChevronDown className="h-4 w-4" />
+                    <DropdownMenuTrigger asChild>
+                      <a href="#warehouse" className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none cursor-pointer">
+                        Warehouse <ChevronDown className="h-4 w-4" />
+                      </a>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-farm-dark border-farm-primary/30">
+                    <DropdownMenuContent className="bg-farm-dark border-white/10 text-white">
                       {harvestItems.map((item) => (
-                        <DropdownMenuItem
-                          key={item.name}
-                          className="text-white/90 hover:text-farm-mint hover:bg-farm-primary/30 cursor-pointer"
-                        >
-                          <a href={item.href}>{item.name}</a>
+                        <DropdownMenuItem key={item.name} asChild className="hover:bg-white/10 cursor-pointer">
+                          <a href={item.href} className="flex items-center gap-2 w-full">
+                            {item.icon} {item.name}
+                          </a>
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  {/* Explore Dropdown */}
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
-                      Explore
-                      <ChevronDown className="h-4 w-4" />
+                    <DropdownMenuTrigger asChild>
+                      <a href="#trends" className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none cursor-pointer">
+                        Trends <ChevronDown className="h-4 w-4" />
+                      </a>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-farm-dark border-farm-primary/30">
-                      {exploreItems.map((item) => (
-                        <DropdownMenuItem
-                          key={item.name}
-                          className="text-white/90 hover:text-farm-mint hover:bg-farm-primary/30 cursor-pointer"
-                        >
-                          <a href={item.href}>{item.name}</a>
+                    <DropdownMenuContent className="bg-farm-dark border-white/10 text-white">
+                      {trendsItems.map((item) => (
+                        <DropdownMenuItem key={item.name} asChild className="hover:bg-white/10 cursor-pointer">
+                          <a href={item.href} className="flex items-center gap-2 w-full">
+                            {item.icon} {item.name}
+                          </a>
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  {/* Trends Dropdown (from merged branch) */}
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
-                      Trends
-                      <ChevronDown className="h-4 w-4" />
+                    <DropdownMenuTrigger asChild>
+                      <a href="#preference" className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none cursor-pointer">
+                        Preference <ChevronDown className="h-4 w-4" />
+                      </a>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-farm-dark border-farm-primary/30">
-                      {exploreItems.map((item) => (
-                        <DropdownMenuItem
-                          key={item.name}
-                          className="text-white/90 hover:text-farm-mint hover:bg-farm-primary/30 cursor-pointer"
-                        >
-                          <a href={item.href}>{item.name}</a>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  {/* Preference Dropdown (from merged branch) */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="text-white/90 hover:text-farm-mint transition-colors duration-200 text-sm font-medium flex items-center gap-1 outline-none">
-                      Preference
-                      <ChevronDown className="h-4 w-4" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-farm-dark border-farm-primary/30">
+                    <DropdownMenuContent className="bg-farm-dark border-white/10 text-white">
                       {preferenceItems.map((item) => (
-                        <DropdownMenuItem
-                          key={item.name}
-                          onClick={() => handlePreferenceClick(item.name)}
-                          className="text-white/90 hover:text-farm-mint hover:bg-farm-primary/30 cursor-pointer"
-                        >
-                          {item.name}
+                        <DropdownMenuItem key={item.name} asChild className="hover:bg-white/10 cursor-pointer">
+                          <a href={item.href} className="flex items-center gap-2 w-full">
+                            {item.icon} {item.name}
+                          </a>
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
@@ -207,63 +149,18 @@ export function Navbar({ cartCount, onCartClick, onPortalClick, isPortalActive }
               )}
             </div>
 
-            {/* Right: Search + Cart */}
+            {/* Right: Logout + Farmer Portal */}
             <div className="flex items-center gap-3">
               {!isPortalActive && (
-                <>
-                  <div className="hidden sm:flex items-center relative">
-                    <div className="flex items-center">
-                      <Input
-                        type="text"
-                        placeholder="Search..."
-                        value={searchQuery}
-                        onChange={(e) => handleSearch(e.target.value)}
-                        className="w-40 lg:w-52 bg-farm-primary/50 border-farm-primary/50 text-white placeholder:text-white/50 rounded-r-none focus-visible:ring-farm-mint"
-                      />
-                      <Button
-                        size="icon"
-                        className="bg-farm-primary/70 hover:bg-farm-primary rounded-l-none border border-l-0 border-farm-primary/50"
-                      >
-                        <Search className="h-4 w-4 text-white" />
-                      </Button>
-                    </div>
-
-                    {/* Search Results Dropdown */}
-                    <AnimatePresence>
-                      {searchResults.length > 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 10 }}
-                          className="absolute top-full left-0 right-0 mt-2 bg-farm-dark border border-farm-primary/30 rounded-lg shadow-xl overflow-hidden z-50 max-h-60 overflow-y-auto"
-                        >
-                          {searchResults.map((result) => (
-                            <button
-                              key={`${result.type}-${result.id}`}
-                              onClick={() => handleResultClick(result.href)}
-                              className="w-full text-left px-4 py-2 hover:bg-farm-primary/30 transition-colors flex flex-col gap-0.5"
-                            >
-                              <span className="text-white text-sm font-medium truncate">{result.name}</span>
-                              <span className="text-farm-mint text-[10px] uppercase font-bold tracking-wider">{result.type}</span>
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="relative text-white hover:text-farm-mint hover:bg-transparent"
-                    onClick={onCartClick}
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    <span className="absolute -top-1 -right-1 bg-farm-mint text-farm-dark text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  </Button>
-                </>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:text-red-500 hover:bg-transparent"
+                  onClick={() => navigate('/')}
+                  title="Logout"
+                >
+                  <LogOut className="h-5 w-5" />
+                </Button>
               )}
               <Button
                 variant="default"
@@ -329,49 +226,39 @@ export function Navbar({ cartCount, onCartClick, onPortalClick, isPortalActive }
                     {link.name}
                   </motion.a>
                 ))}
-                <a
-                  href="#shop"
-                  className="pt-4 border-t border-white/10 text-2xl text-white/90 hover:text-farm-mint transition-colors py-2"
-                  onClick={() => setMobileMenuOpen(false)}
+
+                <div className="flex flex-col gap-2 pt-2">
+                  <span className="text-white/40 text-sm uppercase tracking-widest font-bold">Services</span>
+                  {harvestItems.map((item) => (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      className="text-xl text-white/90 hover:text-farm-mint transition-colors py-1"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </a>
+                  ))}
+                  {trendsItems.map((item) => (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      className="text-xl text-white/90 hover:text-farm-mint transition-colors py-1"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </a>
+                  ))}
+                </div>
+                <button
+                  className="pt-4 border-t border-white/10 text-2xl text-red-500 hover:text-red-400 transition-colors py-2 text-left"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate('/');
+                  }}
                 >
-                  Loan
-                </a>
-                <div className="pt-4 border-t border-white/10">
-                  <span className="text-sm text-white/50 uppercase tracking-wider">
-                    Trends
-                  </span>
-                  <div className="flex flex-col gap-2 mt-2">
-                    {exploreItems.map((item) => (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        className="text-lg text-white/70 hover:text-farm-mint transition-colors"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {item.name}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-                <div className="pt-4 border-t border-white/10">
-                  <span className="text-sm text-white/50 uppercase tracking-wider">
-                    Preference
-                  </span>
-                  <div className="flex flex-col gap-2 mt-2">
-                    {preferenceItems.map((item) => (
-                      <button
-                        key={item.name}
-                        onClick={() => {
-                          handlePreferenceClick(item.name);
-                          setMobileMenuOpen(false);
-                        }}
-                        className="text-lg text-left text-white/70 hover:text-farm-mint transition-colors"
-                      >
-                        {item.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                  Logout
+                </button>
               </nav>
             </div>
           </motion.div>

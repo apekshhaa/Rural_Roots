@@ -1,0 +1,414 @@
+/* ── CSS Variables ────────────────────────────────────────── */
+.krishisight-dashboard {
+  --ks-bg:          #f4f8f2;        /* page background  */
+  --ks-bg-card:     #ffffff;        /* card background  */
+  --ks-bg-sidebar:  #eef4eb;        /* sidebar tint     */
+  --ks-green-dark:  #1e5631;        /* headings / dark  */
+  --ks-green-mid:   #2d8653;        /* primary green    */
+  --ks-green-light: #52b788;        /* accents          */
+  --ks-green-pale:  #b7e4c7;        /* soft highlights  */
+  --ks-green-tint:  #d8f3dc;        /* lightest tint    */
+  --ks-orange:      #f4a261;        /* alert / medium   */
+  --ks-red:         #e63946;        /* down / danger    */
+  --ks-up-green:    #2d8653;        /* price up color   */
+  --ks-forecast:    #6a4fbf;        /* ARIMA purple     */
+  --ks-text-head:   #1a3d28;
+  --ks-text-body:   #3d5a4a;
+  --ks-text-soft:   #7a9485;
+  --ks-border:      #cde8d4;
+  --ks-shadow:      0 2px 12px rgba(30,86,49,0.09);
+  --ks-shadow-md:   0 4px 24px rgba(30,86,49,0.13);
+  --ks-radius:      14px;
+  --ks-radius-sm:   8px;
+}
+
+.krishisight-dashboard {
+  font-family: 'Nunito', sans-serif;
+  background: var(--ks-bg);
+  color: var(--ks-text-body);
+  border-radius: var(--ks-radius);
+  overflow: hidden;
+  border: 1px solid var(--ks-border);
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.ks-header {
+  background: var(--ks-green-dark);
+  padding: 0 28px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ks-header-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ks-header-logo .icon {
+  background: var(--ks-orange);
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  display: grid; place-items: center;
+  font-size: 18px;
+}
+.ks-header-logo span { color: var(--ks-green-pale); }
+.ks-header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+/* Live dot badge */
+.ks-live-badge {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.12);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 13px; font-weight: 700; color: #fff;
+}
+.ks-live-dot {
+  width: 8px; height: 8px;
+  background: #44dd88;
+  border-radius: 50%;
+  animation: blink 1.4s infinite;
+}
+@keyframes blink {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:0.4; transform:scale(1.4); }
+}
+.ks-header-clock {
+  font-size: 13px; font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.5px;
+}
+
+/* ── 3-Column Layout ──────────────────────────────────────── */
+.ks-app-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr 280px;
+  gap: 0;
+  min-height: 600px;
+}
+
+/* ── Sidebar Shared ───────────────────────────────────────── */
+.ks-sidebar-left,
+.ks-sidebar-right {
+  background: var(--ks-bg-sidebar);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow-y: auto;
+}
+.ks-sidebar-left  { border-right: 1px solid var(--ks-border); }
+.ks-sidebar-right { border-left:  1px solid var(--ks-border); }
+
+/* ── Main Column ──────────────────────────────────────────── */
+.ks-main-col {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+}
+
+/* ── Section Label ────────────────────────────────────────── */
+.ks-section-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--ks-text-soft);
+  margin-bottom: 8px;
+}
+
+/* ── Card Base ────────────────────────────────────────────── */
+.ks-card {
+  background: var(--ks-bg-card);
+  border-radius: var(--ks-radius);
+  box-shadow: var(--ks-shadow);
+  border: 1px solid var(--ks-border);
+  padding: 16px;
+}
+.ks-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  color: var(--ks-text-head);
+  margin-bottom: 4px;
+}
+.ks-card-sub {
+  font-size: 12px;
+  color: var(--ks-text-soft);
+  margin-bottom: 14px;
+}
+
+/* ── Crop Selector ────────────────────────────────────────── */
+.ks-crop-select-wrap select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 2px solid var(--ks-border);
+  border-radius: var(--ks-radius-sm);
+  background: var(--ks-bg-card);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ks-text-head);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%232d8653' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  transition: border-color 0.2s;
+}
+.ks-crop-select-wrap select:focus {
+  outline: none;
+  border-color: var(--ks-green-light);
+  box-shadow: 0 0 0 3px rgba(82,183,136,0.2);
+}
+
+/* ── Mandi Price List ─────────────────────────────────────── */
+.ks-mandi-list { display: flex; flex-direction: column; gap: 9px; }
+.ks-mandi-item {
+  background: var(--ks-bg-card);
+  border: 1.5px solid var(--ks-border);
+  border-radius: var(--ks-radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.ks-mandi-item:hover {
+  border-color: var(--ks-green-light);
+  box-shadow: var(--ks-shadow-md);
+}
+/* flash on live update */
+.ks-mandi-item.ks-updated {
+  animation: ks-flash 1.6s ease;
+}
+@keyframes ks-flash {
+  0%   { background: #fff9cc; }
+  100% { background: var(--ks-bg-card); }
+}
+.ks-mandi-left .ks-mandi-name { font-size: 13px; font-weight: 800; color: var(--ks-text-head); }
+.ks-mandi-left .ks-mandi-dist { font-size: 11px; color: var(--ks-text-soft); margin-top: 1px; }
+.ks-mandi-right { text-align: right; }
+.ks-mandi-price {
+  font-size: 15px; font-weight: 900;
+  color: var(--ks-green-dark);
+}
+.ks-mandi-change {
+  font-size: 12px; font-weight: 700;
+  margin-top: 2px;
+}
+.ks-mandi-change.ks-up   { color: var(--ks-up-green); }
+.ks-mandi-change.ks-down { color: var(--ks-red); }
+
+/* ── Warehouse Cards ──────────────────────────────────────── */
+.ks-warehouse-list { display: flex; flex-direction: column; gap: 10px; }
+.ks-wh-card {
+  background: var(--ks-bg-card);
+  border: 1.5px solid var(--ks-border);
+  border-radius: var(--ks-radius-sm);
+  padding: 11px 13px;
+}
+.ks-wh-row1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.ks-wh-name  { font-size: 13px; font-weight: 800; color: var(--ks-text-head); }
+.ks-wh-badge {
+  font-size: 10px; font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.ks-wh-badge.ks-available { background: var(--ks-green-tint); color: var(--ks-up-green); }
+.ks-wh-badge.ks-limited   { background: #fff3e0;           color: #c8660a; }
+.ks-wh-badge.ks-full      { background: #ffe0e0;           color: var(--ks-red); }
+.ks-wh-bar-bg {
+  height: 7px;
+  background: var(--ks-bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.ks-wh-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease;
+}
+.ks-wh-bar-fill.ks-green  { background: var(--ks-green-light); }
+.ks-wh-bar-fill.ks-orange { background: var(--ks-orange); }
+.ks-wh-bar-fill.ks-red    { background: var(--ks-red); }
+.ks-wh-cap-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--ks-text-soft);
+}
+
+/* ── Price Chart Card ─────────────────────────────────────── */
+.ks-chart-card {
+  background: var(--ks-bg-card);
+  border: 1.5px solid var(--ks-border);
+  border-radius: var(--ks-radius);
+  box-shadow: var(--ks-shadow);
+  overflow: hidden;
+}
+.ks-chart-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--ks-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+/* Chart legend pills */
+.ks-chart-legend {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  align-items: center;
+}
+.ks-legend-item {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 600;
+  color: var(--ks-text-body);
+}
+.ks-legend-dot  { width: 11px; height: 11px; border-radius: 50%; }
+.ks-legend-rect { width: 18px; height: 8px;  border-radius: 3px; }
+.ks-chart-body  { padding: 16px 18px; }
+
+/* ── AI Selling Window ────────────────────────────────────── */
+.ks-selling-window {
+  background: linear-gradient(135deg, #1e5631 0%, #2d8653 100%);
+  border-radius: var(--ks-radius);
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--ks-shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+/* decorative circle */
+.ks-selling-window::after {
+  content: '';
+  position: absolute;
+  right: -50px; top: -50px;
+  width: 160px; height: 160px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+.ks-sw-icon { font-size: 36px; flex-shrink: 0; }
+.ks-sw-text h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px; color: #fff;
+  margin-bottom: 4px;
+}
+.ks-sw-text p { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.5; }
+.ks-sw-right {
+  margin-left: auto;
+  text-align: right;
+  flex-shrink: 0;
+}
+.ks-sw-label  { font-size: 11px; color: var(--ks-green-pale); font-weight: 700; letter-spacing: 0.6px; }
+.ks-sw-dates  {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; color: var(--ks-orange);
+}
+.ks-sw-sub    { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+/* ── Seasonal Comparison ──────────────────────────────────── */
+.ks-season-card {
+  background: var(--ks-bg-card);
+  border: 1.5px solid var(--ks-border);
+  border-radius: var(--ks-radius);
+  box-shadow: var(--ks-shadow);
+  padding: 16px 18px;
+}
+.ks-season-legend {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 12px; font-weight: 700;
+}
+.ks-season-legend-item { display: flex; align-items: center; gap: 5px; }
+.ks-sl-dot { width: 10px; height: 10px; border-radius: 50%; }
+.ks-season-bars { display: flex; flex-direction: column; gap: 11px; margin-top: 14px; }
+.ks-season-row  { display: flex; align-items: center; gap: 10px; }
+.ks-season-month { width: 36px; font-size: 12px; font-weight: 700; color: var(--ks-text-soft); flex-shrink: 0; }
+.ks-season-tracks { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.ks-season-track-bg {
+  height: 9px;
+  background: var(--ks-bg);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+.ks-season-track-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ks-fill-current { background: var(--ks-green-light); }
+.ks-fill-prev    { background: var(--ks-green-pale); }
+.ks-season-val {
+  width: 52px;
+  text-align: right;
+  font-size: 11px; font-weight: 700;
+  color: var(--ks-text-body);
+}
+
+/* ── Demand Heatmap ───────────────────────────────────────── */
+.ks-heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+}
+.ks-hm-cell {
+  border-radius: var(--ks-radius-sm);
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.ks-hm-cell:hover { transform: scale(1.04); box-shadow: var(--ks-shadow-md); }
+.ks-hm-city  { font-size: 11px; font-weight: 800; }
+.ks-hm-level { font-size: 13px; font-weight: 900; margin-top: 3px; }
+/* demand color levels */
+.ks-hm-high   { background: var(--ks-green-dark);  } .ks-hm-high  .ks-hm-city,.ks-hm-high  .ks-hm-level { color: #fff; }
+.ks-hm-medium { background: #a7c957;            } .ks-hm-medium .ks-hm-city,.ks-hm-medium .ks-hm-level { color: var(--ks-green-dark); }
+.ks-hm-low    { background: #e9f5db;            } .ks-hm-low   .ks-hm-city,.ks-hm-low   .ks-hm-level { color: var(--ks-green-dark); }
+.ks-hm-scale  {
+  display: flex; align-items: center; gap: 5px;
+  margin-top: 8px; font-size: 10px; font-weight: 700; color: var(--ks-text-soft);
+}
+.ks-hm-bar {
+  flex: 1; height: 5px; border-radius: 3px;
+  background: linear-gradient(90deg, #e9f5db, var(--ks-green-dark));
+}
+
+/* ── Animations ───────────────────────────────────────────── */
+.ks-fade-up {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: ks-fadeUp 0.5s ease forwards;
+}
+@keyframes ks-fadeUp {
+  to { opacity:1; transform:translateY(0); }
+}
+.ks-d1 { animation-delay: 0.05s; }
+.ks-d2 { animation-delay: 0.10s; }
+.ks-d3 { animation-delay: 0.15s; }
+.ks-d4 { animation-delay: 0.20s; }
+.ks-d5 { animation-delay: 0.25s; }
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .ks-app-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+}
