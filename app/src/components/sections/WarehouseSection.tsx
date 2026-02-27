@@ -110,6 +110,7 @@ export function WarehouseSection() {
     const [isTyping, setIsTyping] = useState(false);
     const [chatInput, setChatInput] = useState('');
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isTTSEnabled, setIsTTSEnabled] = useState(false);
     const [isOllamaConnected, setIsOllamaConnected] = useState(false);
     const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
@@ -266,7 +267,7 @@ export function WarehouseSection() {
                 }
             }
 
-            if (isSpeaking) speakText(fullContent);
+            if (isTTSEnabled) speakText(fullContent);
         } catch (error) {
             console.error('Ollama Error:', error);
             setChatHistory(prev => {
@@ -314,7 +315,15 @@ export function WarehouseSection() {
     const speakText = (text: string) => {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
+
+        // Find best voice for selected language
+        const voices = window.speechSynthesis.getVoices();
+        const voice = voices.find(v => v.lang.startsWith(selectedLang.split('-')[0])) ||
+            voices.find(v => v.lang.includes('IN'));
+
+        if (voice) utterance.voice = voice;
         utterance.lang = selectedLang;
+
         utterance.onstart = () => setIsSpeaking(true);
         utterance.onend = () => setIsSpeaking(false);
         window.speechSynthesis.speak(utterance);
@@ -721,11 +730,19 @@ export function WarehouseSection() {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <button
-                                            onClick={() => setIsSpeaking(!isSpeaking)}
-                                            className={`p-2 rounded-lg transition-colors ${isSpeaking ? 'bg-farm-mint text-farm-dark' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+                                            onClick={() => setIsTTSEnabled(!isTTSEnabled)}
+                                            className={`p-2 rounded-lg transition-colors ${isTTSEnabled ? 'bg-farm-mint text-farm-dark' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
                                             title="Toggle Text-to-Speech"
                                         >
-                                            <Volume2 className="h-4 w-4" />
+                                            <div className="relative">
+                                                <Volume2 className="h-4 w-4" />
+                                                {isSpeaking && (
+                                                    <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-farm-mint opacity-75"></span>
+                                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-farm-mint"></span>
+                                                    </span>
+                                                )}
+                                            </div>
                                         </button>
                                         <div className="relative">
                                             <button
