@@ -344,7 +344,7 @@ export default function FarmerPortal({ onBack }: FarmerPortalProps) {
                     >
                         ← Back to Website
                     </button>
-                    <div className="f-logo">Agri<span>Vault</span></div>
+                    <div className="f-logo">Rural<span>Roots</span></div>
                 </div>
                 <div className="topbar-right">
                     <div className="wallet-pill">₹ {fmt(wallet)}</div>

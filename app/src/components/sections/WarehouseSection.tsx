@@ -78,6 +78,10 @@ function MapRecenter({ lat, lng }: { lat: number; lng: number }) {
     const map = useMap();
     useEffect(() => {
         map.setView([lat, lng]);
+        // Fix tile rendering issues
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 100);
     }, [lat, lng, map]);
     return null;
 }
@@ -436,7 +440,7 @@ export function WarehouseSection() {
                     {/* Map + Cards */}
                     <div className="space-y-6 flex flex-col min-h-0">
                         {/* Interactive Map */}
-                        <div className="h-[320px] bg-farm-mint/10 rounded-2xl relative overflow-hidden shadow-inner border border-farm-mint/20 flex-shrink-0">
+                        <div className="h-[320px] bg-farm-mint/10 rounded-2xl relative overflow-hidden shadow-inner border border-farm-mint/20 flex-shrink-0 z-0 isolate">
                             <MapContainer
                                 center={[userLocation.lat, userLocation.lng]}
                                 zoom={11}
