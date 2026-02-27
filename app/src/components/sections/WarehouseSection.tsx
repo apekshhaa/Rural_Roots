@@ -103,9 +103,9 @@ export function WarehouseSection() {
     // --- Chat & Ollama & Voice States ---
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isCaptureActive, setIsCaptureActive] = useState(false);
-    const [selectedLang, setSelectedLang] = useState('en-US');
+    const [selectedLang, setSelectedLang] = useState('kn-IN');
     const [chatHistory, setChatHistory] = useState<any[]>([
-        { role: 'assistant', content: "Hello, Farmer! I'm your AI guide. Need help finding cold storage or preparing for harvest? Ask me anything!" }
+        { role: 'assistant', content: "ನಮಸ್ಕಾರ ರೈತರೇ! ನಾನು ನಿಮ್ಮ ಎಐ ಮಾರ್ಗದರ್ಶಿ. ಶೀತಲ ಸಂಗ್ರಹಣೆಯನ್ನು ಹುಡುಕಲು ಅಥವಾ ಸುಗ್ಗಿಯ ತಯಾರಿಗೆ ನಿಮಗೆ ಸಹಾಯ ಬೇಕೇ? ನನ್ನನ್ನು ಏನು ಬೇಕಾದರೂ ಕೇಳಿ!" }
     ]);
     const [isTyping, setIsTyping] = useState(false);
     const [chatInput, setChatInput] = useState('');
@@ -221,7 +221,7 @@ export function WarehouseSection() {
                 body: JSON.stringify({
                     model: 'llama3',
                     messages: [
-                        { role: 'system', content: `You are "Harvest Helper," a polite agricultural assistant for the Rural Roots platform. Keep answers short, practical, and in ${languages.find(l => l.code === selectedLang)?.label}. Help users with warehouse booking, crop storage, and post-harvest tips.` },
+                        { role: 'system', content: `You are "Harvest Helper," a polite agricultural assistant for the Rural Roots platform. You MUST respond ONLY in ${languages.find(l => l.code === selectedLang)?.label}. Keep answers short, practical, and culturally relevant. Help users with warehouse booking, crop storage, and post-harvest tips.` },
                         ...chatHistory.filter(m => m.role !== 'system'),
                         newMsg
                     ],
@@ -273,7 +273,7 @@ export function WarehouseSection() {
                 const newHistory = [...prev];
                 newHistory[newHistory.length - 1] = {
                     role: 'assistant',
-                    content: "Sorry, I'm having trouble connecting to my brain (Ollama). Please ensure it's running locally."
+                    content: selectedLang === 'kn-IN' ? "ಕ್ಷಮಿಸಿ, ನನ್ನ ಮೆದುಳಿಗೆ (Ollama) ಸಂಪರ್ಕಿಸಲು ನನಗೆ ತೊಂದರೆಯಾಗುತ್ತಿದೆ. ದಯವಿಟ್ಟು ಅದು ಸ್ಥಳೀಯವಾಗಿ ಚಾಲನೆಯಲ್ಲಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ." : selectedLang === 'hi-IN' ? "क्षमा करें, मुझे अपने मस्तिष्क (Ollama) से जुड़ने में समस्या हो रही है। कृपया सुनिश्चित करें कि यह स्थानीय रूप से चल रहा है।" : "Sorry, I'm having trouble connecting to my brain (Ollama). Please ensure it's running locally."
                 };
                 return newHistory;
             });
